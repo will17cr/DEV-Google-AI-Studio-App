@@ -36,7 +36,7 @@ async function getEnhancedPrompt(basePrompt: string): Promise<string> {
 }
 
 
-export async function generateComicImageFromPrompt(basePrompt: string): Promise<string> {
+export async function generateComicImageFromPrompt(basePrompt: string, aspectRatio: string): Promise<string> {
     console.log("Starting comic generation for:", basePrompt);
 
     // Step 1: Enhance the user's prompt for better comic-style results
@@ -50,7 +50,7 @@ export async function generateComicImageFromPrompt(basePrompt: string): Promise<
         config: {
           numberOfImages: 1,
           outputMimeType: 'image/jpeg',
-          aspectRatio: '1:1',
+          aspectRatio: aspectRatio,
         },
     });
 

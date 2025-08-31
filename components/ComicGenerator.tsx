@@ -21,8 +21,7 @@ const ComicDisplay: React.FC<ComicDisplayProps> = ({ imageUrl, prompt }) => (
      <img 
         src={imageUrl} 
         alt={prompt} 
-        className="rounded-lg shadow-2xl shadow-yellow-500/10 border-4 border-slate-700 max-w-full h-auto object-contain"
-        style={{ maxWidth: '512px', maxHeight: '512px' }}
+        className="w-full max-w-lg rounded-lg shadow-2xl shadow-yellow-500/10 border-4 border-slate-700 h-auto object-contain"
       />
       <p className="text-center text-slate-400 italic mt-2 text-sm max-w-md">"{prompt}"</p>
   </div>
@@ -51,9 +50,18 @@ const WelcomePlaceholder: React.FC = () => (
     </div>
 );
 
+const aspectRatios = [
+    { value: '1:1', label: 'Square' },
+    { value: '4:3', label: 'Landscape' },
+    { value: '3:4', label: 'Portrait' },
+    { value: '16:9', label: 'Widescreen' },
+    { value: '9:16', label: 'Story' },
+];
+
 
 export const ComicGenerator: React.FC = () => {
   const [prompt, setPrompt] = useState<string>('');
+  const [aspectRatio, setAspectRatio] = useState<string>('1:1');
   const [lastPrompt, setLastPrompt] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,7 +77,7 @@ export const ComicGenerator: React.FC = () => {
     setLastPrompt(prompt);
 
     try {
-      const imageB64 = await generateComicImageFromPrompt(prompt);
+      const imageB64 = await generateComicImageFromPrompt(prompt, aspectRatio);
       setGeneratedImage(`data:image/jpeg;base64,${imageB64}`);
     } catch (e) {
       console.error(e);
@@ -78,7 +86,7 @@ export const ComicGenerator: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [prompt, isLoading]);
+  }, [prompt, isLoading, aspectRatio]);
 
   return (
     <div className="w-full max-w-2xl bg-slate-800/50 p-6 md:p-8 rounded-2xl shadow-xl border border-slate-700">
@@ -92,6 +100,28 @@ export const ComicGenerator: React.FC = () => {
           className="w-full bg-slate-900 border-2 border-slate-600 rounded-lg p-4 text-slate-200 focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none transition duration-200 resize-none h-28"
           disabled={isLoading}
         />
+         <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-slate-300">Aspect Ratio</label>
+            <div className="grid grid-cols-5 gap-2">
+                {aspectRatios.map((ratio) => (
+                    <button
+                        key={ratio.value}
+                        type="button"
+                        onClick={() => setAspectRatio(ratio.value)}
+                        className={`p-2 rounded-md text-xs font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-yellow-400
+                            ${aspectRatio === ratio.value 
+                                ? 'bg-yellow-400 text-slate-900' 
+                                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                            }`
+                        }
+                        aria-pressed={aspectRatio === ratio.value}
+                        title={ratio.label}
+                    >
+                        {ratio.value}
+                    </button>
+                ))}
+            </div>
+        </div>
         <button
           type="submit"
           disabled={isLoading || !prompt.trim()}
