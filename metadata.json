@@ -1,0 +1,5 @@
+{
+  "name": "Comic Crafter AI",
+  "description": "Generate unique comic book style images from your text descriptions. This app uses Gemini to enhance your prompt and a powerful image model to bring your comic vision to life.",
+  "requestFramePermissions": []
+}
